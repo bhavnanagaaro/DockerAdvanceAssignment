@@ -15,7 +15,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: DockerAdvanceAssignment
+        working-directory: DockerAdvanceAssigment
 
     steps:
       # Checkout the repository
