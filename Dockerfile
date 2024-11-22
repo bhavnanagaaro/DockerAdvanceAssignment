@@ -1,5 +1,5 @@
 # Step 1: Use an official Maven image to build the application
-FROM maven:3.8.3-openjdk-22 AS build
+FROM maven:3.8.3-openjdk-17 AS build
 
 # Step 2: Set the working directory in the container
 WORKDIR /app
@@ -17,19 +17,23 @@ COPY src ./src
 WORKDIR /app
 
 #RUN mvn clean install
-RUN mvn clean package -DskipTests
+RUN mvn clean install -DskipTests
 
 # Step 7: Use an official OpenJDK runtime as the base for the final image
-FROM openjdk:22-jdk-slim AS runtime
+FROM openjdk:17-jdk-slim AS runtime
 
 # Step 8: Set the working directory in the container
 WORKDIR /app
 
+
+
 # Step 9: Copy the JAR file from the build stage to the runtime stage
-COPY --from=build /app/target/DockerAdvanceAssignment-0.0.1-SNAPSHOT.jar /app/DockerAdvanceAssginment.jar
+COPY --from=build /app/target/DockerAdvanceAssigment-1.0-SNAPSHOT.jar /app/DockerDemoAssignment.jar
+
+
 
 # Step 11: Command to run the application
-ENTRYPOINT ["java", "-jar", "/app/DockerDemo.jar"]
+ENTRYPOINT ["java", "-jar", "/app/DockerDemoAssignment.jar"]
 
 # Step 10: Expose the application port (default Spring Boot port is 8080)
 EXPOSE 8082

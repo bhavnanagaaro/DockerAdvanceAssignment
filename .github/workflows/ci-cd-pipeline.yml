@@ -1,0 +1,45 @@
+name: Spring Boot CI/CD with MySQL and Redis
+
+on:
+  push:
+    branches:
+      - master  # Change to 'master'
+  pull_request:
+    branches:
+      - master  # Change to 'master'
+  workflow_dispatch:  # Enable manual trigger
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: DockerAdvanceAssignment
+
+    steps:
+      # Checkout the repository
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      # Start MySQL, Redis, and Spring Boot application with Docker Compose
+      - name: Start Docker Compose
+        run: |
+          docker compose up -d
+
+      # List all Docker containers
+      - name: List Docker containers
+        run: |
+          docker ps -a
+
+      - name: Check logs
+        run: |
+          docker logs spring-boot-app-container 
+
+
+      # List all Docker containers
+      - name: List Docker containers
+        run: |
+                 docker ps -a
+
+     
