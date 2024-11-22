@@ -1,0 +1,110 @@
+
+Spring Boot Docker Demo Application
+
+Overview
+--------
+This is a simple Spring Boot application demonstrating a CRUD API for managing persons,
+using an SQL database for storage and Redis for caching. The project uses
+Docker for containerization, enabling easy setup and deployment.
+
+Features
+--------
+- REST API for managing persons (Person entity) with Create, Read, Update, and Delete (CRUD) operations.
+- SQL Database for persistent storage.
+- Redis for caching responses, improving performance.
+- Docker for containerization.
+
+Technologies Used
+-----------------
+- Spring Boot: For building the REST API.
+- JPA (Java Persistence API): For interacting with the SQL database.
+- Redis: For caching API responses.
+- Docker: For containerization and easy deployment.
+
+REST API Endpoints
+------------------
+1. **Add a person**
+   - `POST /addperson`
+   - Description: Adds a new person to the database.
+   - Request Body: JSON object containing person details.
+   - Response: JSON object with the saved person's details.
+
+2. **Get all persons**
+   - `GET /getAllPersons`
+   - Description: Retrieves a list of all persons from the database.
+   - Response: JSON array of persons.
+
+3. **Update a person**
+   - `PUT /getPerson/{id}`
+   - Description: Updates an existing person by ID.
+   - Request Body: JSON object with updated person details.
+   - Path Variable: `id` (Person ID to be updated)
+   - Response: JSON object with the updated person's details.
+
+4. **Delete a person**
+   - `DELETE /person/{id}`
+   - Description: Deletes a person by ID from the database.
+   - Path Variable: `id` (Person ID to be deleted)
+   - Response: String message confirming deletion.
+
+Database Configuration
+----------------------
+The application is configured to use an SQL database.
+
+spring.datasource.url=jdbc:mysql://localhost:3306/mydb
+spring.datasource.username=root
+spring.datasource.password=root
+spring.jpa.hibernate.ddl-auto=update
+```
+
+Redis Configuration
+--------------------
+Redis is used for caching in this application.
+The following properties need to be configured in  `application.properties` file:
+
+```
+spring.cache.type=redis
+spring.redis.host=localhost
+spring.redis.port=6379
+```
+
+Docker Setup
+------------
+1. Install Docker and Docker Compose.
+2. Create a `Dockerfile` for the Spring Boot application.
+3. Create a `docker-compose.yml` file to define services for the app, SQL database, and Redis.
+4. Run the following command to start the containers:
+   ```
+   docker-compose up --build
+   ```
+apart from these below docker commands are also used to setup the whole project
+
+docker build -t dockerdemo:v0 .
+
+
+docker network create network-demo
+docker network connect network-demo spring-boot-app
+
+For Mysql Service
+docker run --name mysql-container --network network-demo -e MYSQL_ROOT_PASSWORD=rootpassword -e MYSQL_DATABASE=testdb -e MYSQL_USER=testuser -e MYSQL_PASSWORD=testpassword -p 3306:3306 -d mysql:8.0
+
+For redis service
+
+docker run --name redis-container --network network-demo -p 6380:6380 -d redis:latest
+
+docker tag dockerdemo:v1 bhavnanagarro/dockerdemo:v1
+docker push bhavnanagarro/dockerdemo:v1
+
+Docker network configuration
+
+docker run --network network-demo -p 8082:8082 dockerdemo:v1
+
+Stop all the containers
+
+docker stop $(docker ps -a -q)
+
+Remove all the containers
+
+docker rm $(docker ps -a -q)
+
+

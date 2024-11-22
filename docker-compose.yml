@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # MySQL Database Service
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - network-demo
+
+  # Redis Cache Service
+  redis:
+    image: redis:7-alpine
+    container_name: redis-container
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - network-demo
+
+  # Spring Boot Application Service
+  spring-boot-app:
+    build: .
+    container_name: spring-boot-app-container
+    depends_on:
+      - mysql-db
+      - redis
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/testdb
+      SPRING_DATASOURCE_USERNAME: testuser
+      SPRING_DATASOURCE_PASSWORD: testpassword
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    ports:
+      - "8082:8082"
+    networks:
+      - network-demo
+
+volumes:
+  mysql-data:
+  redis-data:
+
+networks:
+  network-demo:
