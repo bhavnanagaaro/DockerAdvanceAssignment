@@ -3,11 +3,11 @@ name: Spring Boot CI/CD with MySQL and Redis
 on:
   push:
     branches:
-      - master  # Change to 'master'
+      - master
   pull_request:
     branches:
-      - master  # Change to 'master'
-  workflow_dispatch:  # Enable manual trigger
+      - master
+  workflow_dispatch:
 
 jobs:
   build:
@@ -22,24 +22,41 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v2
 
+      # Install Docker Compose
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
       # Start MySQL, Redis, and Spring Boot application with Docker Compose
       - name: Start Docker Compose
         run: |
           docker compose up -d
 
-      # List all Docker containers
-      - name: List Docker containers
+      # Wait for MySQL and Redis
+      - name: Wait for MySQL and Redis
         run: |
-          docker ps -a
+          until docker exec mysql-container mysqladmin ping --silent; do
+            echo "Waiting for MySQL to be ready..."
+            sleep 5
+          done
+          until docker exec redis-container redis-cli ping | grep PONG; do
+            echo "Waiting for Redis to be ready..."
+            sleep 5
+          done
 
+      # Run Tests
+      - name: Run Tests
+        run: |
+          ./mvnw test
+
+      # Check application logs
       - name: Check logs
         run: |
-          docker logs spring-boot-app-container 
+          docker logs spring-boot-app-container
 
-
-      # List all Docker containers
-      - name: List Docker containers
+      # Clean up Docker resources
+      - name: Clean Up
+        if: always()
         run: |
-                 docker ps -a
-
-     
+          docker compose down
