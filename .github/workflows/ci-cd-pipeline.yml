@@ -15,12 +15,18 @@ jobs:
 
     defaults:
       run:
-        working-directory: DockerAdvanceAssignment
+        working-directory: DockerAdvanceAssignment # Update based on your repo structure
 
     steps:
       # Checkout the repository
       - name: Check out the repository
         uses: actions/checkout@v2
+
+      # Debug - List directories
+      - name: Debug - List directories
+        run: |
+          ls -la
+          ls -la DockerAdvanceAssignment
 
       # Install Docker Compose
       - name: Install Docker Compose
